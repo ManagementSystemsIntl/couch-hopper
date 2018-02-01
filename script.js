@@ -63,7 +63,7 @@ function fetchDBs(address) {
 }
 
 function checkAuth(address) {
-  return fetchDBs(address).then(res => {
+  return fetch(address, {method: "GET"}).then(res => res.json()).then(res => {
     if (res.error) {
       throw `${res.error}: ${res.reason}`;
     }
