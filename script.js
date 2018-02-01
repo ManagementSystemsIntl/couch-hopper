@@ -4,29 +4,36 @@ const fetch = require('node-fetch');
 const couchbackup = require('@cloudant/couchbackup');
 const urlencode = require('urlencode');
 const args = require('minimist')(process.argv.slice(2));
+const argsReq = {
+  d: "domain",
+  u: "username",
+  p: "password",
+  b: "backup directory",
+  f: "function"
+};
 
 init();
 
 async function init() {
-  if (!args.f) throw new Error("Argument fx must be supplied. Valid values are 'backup' or 'restore'")
+  if (!args.f) throw new Error("Argument fx must be supplied. Valid values are 'backup' or 'restore'");
   if (args.f === 'backup') {
-    let passable = checkArgs(args, ['d', 'u', 'p']);
+    let passable = checkArgs();
     if (passable) {
       let address = makeAddress(args.d, args.u, args.p);
       try {
         const authorized = await checkAuth(address);
-        backup(address);
+        backup(address, args.b);
       } catch (err) {
         console.log(err);
       }
     }
   } else if (args.f === 'restore') {
-    let passable = checkArgs(args, ['d', 'u', 'p']);
+    let passable = checkArgs();
     if (passable) {
       let address = makeAddress(args.d, args.u, args.p);
       try {
         const authorized = await checkAuth(address);
-        restore(address);
+        restore(address, args.b);
       } catch (err) {
         console.log(err);
       }
@@ -34,21 +41,28 @@ async function init() {
   }
 }
 
-async function backup(address) {
-  const dbs = await fetchDBs(address);
-  if (!fs.existsSync("backups")) {
-    fs.mkdirSync("backups");
+async function backup(address, backupDir) {
+  const dbs = await fetchDBs(address).then(dbs => {
+    return dbs.map(file => {
+      return Object.assign({}, {
+        local: [backupDir, `${file}.json`].join("/"),
+        remote: [address, file].join("/")
+      });
+    });
+  })
+  if (!fs.existsSync(backupDir)) {
+    fs.mkdirSync(backupDir);
   }
   let chain = dbs.reduce((p,n) => {
-    p = p.then(() => harvestDB(address, n));
+    p = p.then(() => harvestDB(n));
     return p;
   }, $q.when());
 }
 
-async function restore(address) {
-  const backups = fs.readdirSync("backups").map(file => {
+async function restore(address, backupDir) {
+  const backups = fs.readdirSync(backupDir).map(file => {
     return Object.assign({}, {
-      local: ["backups",file].join("/"),
+      local: [backupDir, file].join("/"),
       remote: [address, file.replace(".json", "")].join("/")
     });
   });
@@ -86,15 +100,15 @@ function createDB(address) {
   return fetch(address, {method: "PUT"}).then(res => res.json());
 }
 
-function harvestDB(address, db) {
-  console.log("harvesting", db);
+function harvestDB(db) {
+  console.log("harvesting", db.remote);
   return new Promise((resolve, reject) => {
-    couchbackup.backup([address, db].join("/"), fs.createWriteStream(`backups/${db}.json`), {parallelism: 2}, (err, data) => {
+    couchbackup.backup(db.remote, fs.createWriteStream(db.local), {parallelism: 2}, (err, data) => {
       if (err) {
-        console.log("Failed", db, err);
+        console.log("Failed", db.remote, err);
         reject(err);
       } else {
-        console.log("backed", db, data);
+        console.log("backed", db.local, data);
         resolve(data);
       }
     });
@@ -110,7 +124,7 @@ function restoreDB(db) {
           console.log("Failed", db.local, err);
           reject(err);
         } else {
-          console.log("restored", db.local, data);
+          console.log("restored", db.remote, data);
           resolve(data);
         }
       });
@@ -118,13 +132,14 @@ function restoreDB(db) {
   });
 }
 
-function checkArgs(argsObj, keys) {
-  keys.forEach(key => {
-    if (!argsObj[key]) throw new Error(`Missing argument: ${key}`);
+function checkArgs() {
+  Object.keys(argsReq).forEach(key => {
+    if (!args[key]) throw new Error(`Missing argument '${argsReq[key]}': -${key} [value]`);
   });
   return true;
 }
 
 function makeAddress(url, u, p) {
-  return `https://${u}:${urlencode(p)}@${url}`;
+  var protocol = args.i ? "http" : "https";
+  return `${protocol}://${u}:${urlencode(p)}@${url}`;
 }
