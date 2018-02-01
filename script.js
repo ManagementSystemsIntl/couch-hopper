@@ -2,23 +2,34 @@ const fs = require('fs');
 const $q = require('q');
 const fetch = require('node-fetch');
 const couchbackup = require('@cloudant/couchbackup');
+const urlencode = require('urlencode');
 const args = require('minimist')(process.argv.slice(2));
 
 init();
 
-function init() {
+async function init() {
   if (!args.f) throw new Error("Argument fx must be supplied. Valid values are 'backup' or 'restore'")
   if (args.f === 'backup') {
     let passable = checkArgs(args, ['d', 'u', 'p']);
     if (passable) {
       let address = makeAddress(args.d, args.u, args.p);
-      backup(address);
+      try {
+        const authorized = await checkAuth(address);
+        backup(address);
+      } catch (err) {
+        console.log(err);
+      }
     }
   } else if (args.f === 'restore') {
     let passable = checkArgs(args, ['d', 'u', 'p']);
     if (passable) {
       let address = makeAddress(args.d, args.u, args.p);
-      restore(address);
+      try {
+        const authorized = await checkAuth(address);
+        restore(address);
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 }
@@ -38,7 +49,7 @@ async function restore(address) {
   const backups = fs.readdirSync("backups").map(file => {
     return Object.assign({}, {
       local: ["backups",file].join("/"),
-      remote: [address, file.replace(".json", "-new")].join("/")
+      remote: [address, file.replace(".json", "")].join("/")
     });
   });
   let chain = backups.reduce((p,n) => {
@@ -49,6 +60,15 @@ async function restore(address) {
 
 function fetchDBs(address) {
   return fetch([address, "_all_dbs"].join("/"), {method: "GET"}).then(res => res.json());
+}
+
+function checkAuth(address) {
+  return fetchDBs(address).then(res => {
+    if (res.error) {
+      throw `${res.error}: ${res.reason}`;
+    }
+    return true;
+  });
 }
 
 function checkDB(address) {
@@ -106,5 +126,5 @@ function checkArgs(argsObj, keys) {
 }
 
 function makeAddress(url, u, p) {
-  return `https://${u}:${p}@${url}`;
+  return `https://${u}:${urlencode(p)}@${url}`;
 }
