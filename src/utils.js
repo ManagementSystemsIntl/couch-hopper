@@ -1,13 +1,5 @@
 const urlencode = require('urlencode');
-const args = require('minimist')(process.argv.slice(2));
 const { checkUrl } = require('./db');
-const argsReq = {
-  d: "domain",
-  u: "username",
-  p: "password",
-  b: "backup directory",
-  f: "function"
-};
 
 function checkAuth(address) {
   return checkUrl(address).then(res => {
@@ -18,16 +10,9 @@ function checkAuth(address) {
   });
 }
 
-function checkArgs() {
-  Object.keys(argsReq).forEach(key => {
-    if (!args[key]) throw new Error(`Missing argument '${argsReq[key]}': -${key} [value]`);
-  });
-  return true;
-}
-
-function makeAddress(url, u, p) {
-  var protocol = args.i ? "http" : "https";
+function makeAddress(url, u, p, https) {
+  var protocol = https ? "https" : "http";
   return `${protocol}://${u}:${urlencode(p)}@${url}`;
 }
 
-module.exports = { checkAuth, checkArgs, makeAddress };
+module.exports = { checkAuth, makeAddress };

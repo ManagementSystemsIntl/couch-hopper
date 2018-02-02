@@ -2,8 +2,7 @@ const fs = require('fs');
 const $q = require('q');
 const fetch = require('node-fetch');
 const couchbackup = require('@cloudant/couchbackup');
-const args = require('minimist')(process.argv.slice(2));
-const { checkAuth, checkArgs, makeAddress } = require('./utils');
+const { checkAuth, makeAddress } = require('./utils');
 
 async function backup(address, backupDir) {
   const dbs = await fetchDBs(address).then(dbs => {

@@ -12,7 +12,6 @@
     "@cloudant/couchbackup": "^2.0.1",
     "commander": "^2.13.0",
     "inquirer": "^5.0.1",
-    "minimist": "^1.2.0",
     "node-fetch": "^1.7.3",
     "q": "^1.5.1",
     "urlencode": "^1.1.0"

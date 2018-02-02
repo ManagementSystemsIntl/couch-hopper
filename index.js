@@ -1,32 +1,32 @@
-const args = require('minimist')(process.argv.slice(2));
-const { checkArgs, makeAddress, checkAuth } = require('./src/utils');
-const { backup, restore } = require('./src/db');
+const program = require('commander');
+const { prompt } = require('inquirer');
+const { backupAll, restoreAll } = require('./src/logic');
+const { backupAllQuestions, restoreAllQuestions } = require('./src/questions');
 
-init();
+program
+  .version('0.0.1')
+  .description('Automate backups and restores of couch databases.')
 
-async function init() {
-  if (!args.f) throw new Error("Argument fx must be supplied. Valid values are 'backup' or 'restore'");
-  if (args.f === 'backup') {
-    let passable = checkArgs();
-    if (passable) {
-      let address = makeAddress(args.d, args.u, args.p);
-      try {
-        const authorized = await checkAuth(address);
-        backup(address, args.b);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  } else if (args.f === 'restore') {
-    let passable = checkArgs();
-    if (passable) {
-      let address = makeAddress(args.d, args.u, args.p);
-      try {
-        const authorized = await checkAuth(address);
-        restore(address, args.b);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
-}
+program
+  .command('backupAll')
+  .alias('ba')
+  .description('Backup entire couch instance')
+  .action(() => {
+    prompt(backupAllQuestions).then(answers => {
+      var {source, username, password, backupDestination, protocol} = answers;
+      backupAll(source, username, password, backupDestination, protocol);
+    })
+  });
+
+program
+  .command('restoreAll')
+  .alias('ra')
+  .description('Restore all backups from a destination to a target couch instance')
+  .action(() => {
+    prompt(restoreAllQuestions).then(answers => {
+      var {target, username, password, backupDestination, protocol} = answers;
+      restoreAll(target, username, password, backupDestination, protocol);
+    })
+  });
+
+program.parse(process.argv);
