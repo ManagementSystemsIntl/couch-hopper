@@ -2,17 +2,14 @@ const fs = require('fs');
 const $q = require('q');
 const fetch = require('node-fetch');
 const couchbackup = require('@cloudant/couchbackup');
-const { checkAuth, makeAddress } = require('./utils');
 
-async function backup(address, backupDir) {
-  const dbs = await fetchDBs(address).then(dbs => {
-    return dbs.map(file => {
-      return Object.assign({}, {
-        local: [backupDir, `${file}.json`].join("/"),
-        remote: [address, file].join("/")
-      });
+async function backup(address, backupDir, databases) {
+  const dbs = databases.map(file => {
+    return Object.assign({}, {
+      local: [backupDir, `${file}.json`].join("/"),
+      remote: [address, file].join("/")
     });
-  })
+  });
   if (!fs.existsSync(backupDir)) {
     fs.mkdirSync(backupDir);
   }
@@ -22,8 +19,8 @@ async function backup(address, backupDir) {
   }, $q.when());
 }
 
-async function restore(address, backupDir) {
-  const backups = fs.readdirSync(backupDir).map(file => {
+async function restore(address, backupDir, databases) {
+  const backups = databases.map(file => {
     return Object.assign({}, {
       local: [backupDir, file].join("/"),
       remote: [address, file.replace(".json", "")].join("/")
@@ -90,4 +87,4 @@ function restoreDB(db) {
   });
 }
 
-module.exports = { backup, restore, checkUrl };
+module.exports = { backup, restore, checkUrl, fetchDBs };

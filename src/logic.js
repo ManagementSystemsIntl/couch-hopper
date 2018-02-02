@@ -1,24 +1,30 @@
-const { checkArgs, makeAddress, checkAuth } = require('./utils');
+const { makeAddress, checkAuth } = require('./utils');
 const { backup, restore } = require('./db');
 
-async function backupAll(d, u, p, b, i) {
-  let address = makeAddress(d, u, p, i);
+async function testConnection(url, username, password, protocol) {
+  let address = makeAddress(url, username, password, protocol);
   try {
     const authorized = await checkAuth(address);
-    backup(address, b);
+    return {url, username, password, protocol, address};
   } catch (err) {
     console.log(err);
   }
 }
 
-async function restoreAll(d, u, p, b, i) {
-  let address = makeAddress(d, u, p, i);
+async function backupAll(address, backupDestination, databases) {
   try {
-    const authorized = await checkAuth(address);
-    restore(address, b);
+    await backup(address, backupDestination, databases);
   } catch (err) {
     console.log(err);
   }
 }
 
-module.exports = { backupAll, restoreAll };
+async function restoreAll(address, backupDestination, databases) {
+  try {
+    await restore(address, backupDestination, databases);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+module.exports = { testConnection, backupAll, restoreAll };
