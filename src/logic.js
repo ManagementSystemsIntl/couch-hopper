@@ -7,7 +7,7 @@ async function testConnection(url, username, password, protocol) {
     const authorized = await checkAuth(address);
     return {url, username, password, protocol, address};
   } catch (err) {
-    console.log(err);
+    throw err;
   }
 }
 
@@ -15,7 +15,7 @@ async function backupAll(address, backupDestination, databases) {
   try {
     await backup(address, backupDestination, databases);
   } catch (err) {
-    console.log(err);
+    console.log("RIGHT HERE", err);
   }
 }
 

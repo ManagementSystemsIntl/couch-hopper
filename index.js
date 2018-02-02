@@ -1,7 +1,6 @@
 const program = require('commander');
 const { prompt } = require('inquirer');
 const { backupAll, restoreAll } = require('./src/logic');
-const { fetchDBs } = require('./src/db');
 const { backupAllQuestions, restoreAllQuestions } = require('./src/questions');
 
 program
@@ -13,9 +12,10 @@ program
   .alias('ba')
   .description('Backup entire couch instance')
   .action(() => {
-    let creds;
-    prompt(backupAllQuestions).then(answers => {
-      backupAll(answers.address, answers.backupDestination, answers.dbs);
+    prompt(backupAllQuestions).then(params => {
+      if (params.valid) {
+        backupAll(params.address, params.backupDestination, params.dbs);
+      }
     });
   });
 
@@ -24,8 +24,10 @@ program
   .alias('ra')
   .description('Restore all backups from a destination to a target couch instance')
   .action(() => {
-    prompt(restoreAllQuestions).then(answers => {
-      restoreAll(answers.address, answers.backupDestination, answers.dbs);
+    prompt(restoreAllQuestions).then(params => {
+      if (params.valid) {
+        restoreAll(params.address, params.backupDestination, params.dbs);
+      }
     });
   });
 
