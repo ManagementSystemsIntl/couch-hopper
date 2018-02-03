@@ -1,23 +1,23 @@
-const { validateRequired } = require('./validations');
+const validate = require('./validations');
 
 const connectQuestions = [
   {
     type: 'input',
     name: 'url',
     message: 'Enter destination couch url',
-    validate: validateRequired
+    validate: validate.required
   },
   {
     type: 'input',
     name: 'username',
     message: 'Enter username for that couch instance',
-    validate: validateRequired
+    validate: validate.required
   },
   {
     type: 'password',
     name: 'password',
     message: 'Enter password for that username',
-    validate: validateRequired
+    validate: validate.required
   },
   {
     type: 'confirm',

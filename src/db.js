@@ -2,6 +2,7 @@ const fs = require('fs');
 const $q = require('q');
 const fetch = require('node-fetch');
 const couchbackup = require('@cloudant/couchbackup');
+const urlencode = require('urlencode');
 
 async function backup(address, backupDir, databases) {
   const dbs = databases.map(file => {
@@ -22,8 +23,8 @@ async function backup(address, backupDir, databases) {
 async function restore(address, backupDir, databases) {
   const backups = databases.map(file => {
     return Object.assign({}, {
-      local: [backupDir, file].join("/"),
-      remote: [address, file.replace(".json", "")].join("/")
+      local: [backupDir, `${file}.json`].join("/"),
+      remote: [address, file].join("/")
     });
   });
   let chain = backups.reduce((p,n) => {
@@ -32,27 +33,14 @@ async function restore(address, backupDir, databases) {
   }, $q.when());
 }
 
-function fetchDBs(address) {
-  return fetch([address, "_all_dbs"].join("/"), {method: "GET"}).then(res => res.json());
-}
-
-function checkUrl(address) {
-  return fetch(address, {method: "GET"}).then(res => res.json());
-}
-
-function checkDB(address) {
-  return checkUrl(address).then(res => {
-    if (res.error) {
-      console.log(`db ${address} doesn't exist`);
-      throw res.error;
-    }
-    return true;
-  }).catch(res => createDB(address));
-}
-
-function createDB(address) {
-  console.log("creating db", address);
-  return fetch(address, {method: "PUT"}).then(res => res.json());
+async function testConnection(url, username, password, protocol) {
+  let address = makeAddress(url, username, password, protocol);
+  try {
+    const authorized = await checkAuth(address);
+    return {url, username, password, protocol, address};
+  } catch (err) {
+    throw err;
+  }
 }
 
 function harvestDB(db) {
@@ -63,7 +51,7 @@ function harvestDB(db) {
         console.log("Failed", db.remote, err);
         reject(err);
       } else {
-        console.log("backed", db.local, data);
+        console.log("Backed", db.local, data);
         resolve(data);
       }
     });
@@ -79,7 +67,7 @@ function restoreDB(db) {
           console.log("Failed", db.local, err);
           reject(err);
         } else {
-          console.log("restored", db.remote, data);
+          console.log("Restored", db.remote, data);
           resolve(data);
         }
       });
@@ -87,4 +75,41 @@ function restoreDB(db) {
   });
 }
 
-module.exports = { backup, restore, checkUrl, fetchDBs };
+function checkDB(address) {
+  return checkUrl(address).then(res => {
+    if (res.error) {
+      console.log(`db ${address} doesn't exist`);
+      throw res.error;
+    }
+    return true;
+  }).catch(res => createDB(address));
+}
+
+function checkAuth(address) {
+  return checkUrl(address).then(res => {
+    if (res.error) {
+      throw `${res.error}: ${res.reason}`;
+    }
+    return true;
+  });
+}
+
+function createDB(address) {
+  console.log("creating db", address);
+  return fetch(address, {method: "PUT"}).then(res => res.json());
+}
+
+function fetchDBs(address) {
+  return fetch([address, "_all_dbs"].join("/"), {method: "GET"}).then(res => res.json());
+}
+
+function checkUrl(address) {
+  return fetch(address, {method: "GET"}).then(res => res.json());
+}
+
+function makeAddress(url, u, p, https) {
+  var protocol = https ? "https" : "http";
+  return `${protocol}://${u}:${urlencode(p)}@${url}`;
+}
+
+module.exports = { backup, restore, fetchDBs, testConnection };

@@ -1,23 +1,34 @@
-const { validateConnection, validConnection } = require('./validations');
+const validate = require('./validations');
 const { fetchDBs } = require('../db');
 
 const backupQuestions = [
   {
-    type: 'input',
-    name: 'backupDestination',
-    when: validateConnection,
+    type: 'checkbox',
+    name: 'dbs',
+    when: validate.connection,
+    validate: validate.length,
     message: function (params) {
       return fetchDBs(params.address).then(res => {
-        params.dbs = res;
+        params.allDBs = res;
         console.log(`${params.url} has ${res.length} databases.`);
-        return "Where do you want to put these backups?";
+        return "Which databases do you want to backup?";
       });
+    },
+    choices: function (params) {
+      return params.allDBs;
     }
+  },
+  {
+    type: 'input',
+    name: 'backupDestination',
+    when: validate.connected,
+    message: "Where do you want to put these backups?",
+    validate: validate.required
   },
   {
     type: 'confirm',
     name: 'go',
-    when: validConnection,
+    when: validate.connected,
     message: function (params) {
       console.log(`You are about to backup ${params.dbs.length} database(s) from ${params.url} to a folder called ${params.backupDestination}.`)
       return `Do you want to proceed?`;

@@ -2,14 +2,15 @@ const connectQuestions = require('./questions/connect');
 const backupQuestions = require('./questions/backup');
 const restoreQuestions = require('./questions/restore');
 
-const backupAllQuestions = [
-  ...connectQuestions,
-  ...backupQuestions
-];
+const questions = {
+  backup: [
+    ...connectQuestions,
+    ...backupQuestions
+  ],
+  restore: [
+    ...connectQuestions,
+    ...restoreQuestions
+  ]
+};
 
-const restoreAllQuestions = [
-  ...connectQuestions,
-  ...restoreQuestions
-];
-
-module.exports = { backupAllQuestions, restoreAllQuestions };
+module.exports = questions;
