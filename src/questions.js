@@ -5,12 +5,12 @@ const restoreQuestions = require('./questions/restore');
 const questions = {
   backup: [
     ...connectQuestions,
-    ...backupQuestions
+    ...backupQuestions,
   ],
   restore: [
     ...connectQuestions,
-    ...restoreQuestions
-  ]
+    ...restoreQuestions,
+  ],
 };
 
 module.exports = questions;
