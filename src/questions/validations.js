@@ -24,14 +24,18 @@ const validations = {
     }.bind(params)));
   },
   directory(input, params) {
-    const dbs = fs.readdirSync(input);
-    if (dbs.length > 0) {
-      params.allDBs = dbs;
-      params.valid = true;
-      return true;
+    try {
+      const dbs = fs.readdirSync(input);
+      if (dbs.length > 0) {
+        params.allDBs = dbs;
+        params.valid = true;
+        return true;
+      }
+      params.valid = false;
+      return 'There aren\'t any files in this location.';
+    } catch (err) {
+      return 'This directory doesn\'t exist.';
     }
-    params.valid = false;
-    return "There aren't any files in this location.";
   },
   connected(params) {
     return params.valid;
