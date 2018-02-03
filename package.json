@@ -1,12 +1,16 @@
 {
-  "name": "cloudant-harvester",
+  "name": "couch-hopper",
   "version": "1.0.0",
   "description": "Automate backups and restores of couch databases.",
-  "main": "script.js",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
+  "bin": {
+     "couch-hopper": "./bin/index.js"
+   },
+  "preferGlobal": true,
+  "author": "Chase Gruber",
   "license": "ISC",
   "dependencies": {
     "@cloudant/couchbackup": "^2.0.1",

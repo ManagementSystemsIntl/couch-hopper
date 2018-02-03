@@ -1,5 +1,5 @@
 const assert = require('assert');
-const validate = require('../src/questions/validations');
+const validate = require('../lib/questions/validations');
 
 describe('validations', function() {
   describe('#required()', function() {
@@ -28,7 +28,7 @@ describe('validations', function() {
       assert.equal(validate.directory('banana', {}), 'This directory doesn\'t exist.');
     });
     it('should return true if directory has files', function() {
-      assert.equal(validate.directory('./src', {}), true);
+      assert.equal(validate.directory('./lib', {}), true);
     });
   });
   describe('#connected()', function() {
