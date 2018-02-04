@@ -1,7 +1,7 @@
 # Couch Hopper
 
 ## Overview
-Node script that interactively backs up and restores couch db instances, executed from CLI.
+Interactively create and restore backups of couch databases from the command line
 
 ```
 npm i -g couch-hopper
@@ -13,3 +13,5 @@ $ couch-hopper backup
 
 $ couch-hopper restore
 ```
+
+![example](https://media.giphy.com/media/3ohjUYJU8w4BUim7hm/giphy.gif)

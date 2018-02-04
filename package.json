@@ -1,7 +1,7 @@
 {
   "name": "couch-hopper",
-  "version": "1.0.0",
-  "description": "Automate backups and restores of couch databases.",
+  "version": "1.0.1",
+  "description": "Interactively create and restore backups of couch databases from the command line",
   "main": "./lib/index.js",
   "scripts": {
     "test": "mocha"
