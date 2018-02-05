@@ -20,7 +20,7 @@ describe('validations', function() {
   });
   describe('#connection()', function() {
     it('should return false if unable to connect', function() {
-      return validate.connection({ url: 'baba', username: 'baba', password: 'baba', protocol: true });
+      return validate.connection({ url: 'baba', username: 'baba', password: 'baba', https: true });
     });
   });
   describe('#directory()', function() {

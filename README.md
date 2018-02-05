@@ -14,7 +14,7 @@ $ couch-hopper backup
 $ couch-hopper restore
 ```
 
-![example](https://media.giphy.com/media/3ohjUYJU8w4BUim7hm/giphy.gif)
+<!-- ![example](https://media.giphy.com/media/3ohjUYJU8w4BUim7hm/giphy.gif) -->
 
 ## License
 
