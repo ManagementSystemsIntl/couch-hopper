@@ -3,15 +3,24 @@
   "version": "1.0.1",
   "description": "Interactively create and restore backups of couch databases from the command line",
   "main": "./lib/index.js",
+  "homepage": "https://github.com/ManagementSystemsIntl/couch-hopper",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ManagementSystemsIntl/couch-hopper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ManagementSystemsIntl/couch-hopper/issues"
+  },
   "scripts": {
     "test": "mocha"
   },
+  "keywords": ["couchdb", "couch", "backup", "restore", "cli"],
   "bin": {
      "couch-hopper": "./bin/index.js"
    },
   "preferGlobal": true,
   "author": "Chase Gruber",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@cloudant/couchbackup": "^2.0.1",
     "commander": "^2.13.0",
