@@ -1,5 +1,6 @@
 const assert = require('assert');
 const validate = require('../lib/questions/validations');
+const env = require('./env');
 
 describe('validations', function() {
   describe('#required()', function() {
@@ -20,7 +21,14 @@ describe('validations', function() {
   });
   describe('#connection()', function() {
     it('should return false if unable to connect', function() {
-      return validate.connection({ url: 'baba', username: 'baba', password: 'baba', https: true });
+      return validate.connection({ url: 'baba', username: 'baba', password: 'baba', https: true }).then(res => {
+        assert.equal(res, false);
+      });
+    });
+    it('should return true if able to connect', function() {
+      return validate.connection(env).then(res => {
+        assert.equal(res, true);
+      });
     });
   });
   describe('#directory()', function() {
