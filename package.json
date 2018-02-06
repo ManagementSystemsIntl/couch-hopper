@@ -1,6 +1,6 @@
 {
   "name": "couch-hopper",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Interactively create and restore backups of couch databases from the command line",
   "main": "./lib/index.js",
   "homepage": "https://github.com/ManagementSystemsIntl/couch-hopper",
