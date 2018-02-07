@@ -1,6 +1,6 @@
 {
   "name": "couch-hopper",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Interactively create and restore backups of couch databases from the command line",
   "main": "./lib/index.js",
   "homepage": "https://github.com/ManagementSystemsIntl/couch-hopper",
@@ -39,7 +39,6 @@
     "eslint": "^4.17.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
-    "mocha": "^5.0.0",
-    "nock": "^9.1.6"
+    "mocha": "^5.0.0"
   }
 }
