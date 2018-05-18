@@ -14,7 +14,40 @@ $ couch-hopper backup
 $ couch-hopper restore
 ```
 
-<!-- ![example](https://media.giphy.com/media/3ohjUYJU8w4BUim7hm/giphy.gif) -->
+![example](https://media.giphy.com/media/3ohjUYJU8w4BUim7hm/giphy.gif)
+
+You can also do everything from a single command, so you can automate backup/restore procedures.
+
+### Backup
+```
+$ couch-hopper backup|b [options]
+
+  Options:
+
+    -r, --url <remote>         Remote database you want to backup
+    -u, --username <username>  Username for remote database
+    -p, --password <password>  Password for remote database
+    -s, --https                Use https
+    -d, --dbs [databases]      Databases to backup (comma-delimited list; leave blank to backup all)
+    -l, --backupDir <local>    Location to save backups
+    -h, --help                 output usage information
+```
+
+### Restore
+```
+$ couch-hopper restore|r [options]
+
+Options:
+
+  -r, --url <remote>         Remote database you want to restore to
+  -u, --username <username>  Username for remote database
+  -p, --password <password>  Password for remote database
+  -s, --https                Use https
+  -d, --dbs [databases]      Backup json files to restore (comma-delimited list, exclude .json file extension; leave blank to restore all)
+  -l, --backupDir <local>    Location of backups
+  -h, --help                 output usage information
+
+```
 
 ## License
 
